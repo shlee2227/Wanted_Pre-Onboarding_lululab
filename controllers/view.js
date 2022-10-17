@@ -1,7 +1,7 @@
-const userService = require("../services/view");
+const viewService = require("../services/view");
 
-const func = async (req, res) => {};
+const getAvailableReservations = async (req, res) => {};
 
 module.exports = {
-  func,
+  getAvailableReservations,
 };
