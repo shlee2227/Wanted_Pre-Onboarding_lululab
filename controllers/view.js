@@ -1,4 +1,4 @@
-const userService = require("../services/user");
+const userService = require("../services/view");
 
 const func = async (req, res) => {};
 
