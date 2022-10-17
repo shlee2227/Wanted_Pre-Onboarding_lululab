@@ -1,4 +1,4 @@
-const userDao = require("../models/user");
+const reservationDao = require("../models/reservation");
 
 const func = async () => {};
 
