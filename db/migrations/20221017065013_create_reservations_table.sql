@@ -1,7 +1,7 @@
 -- migrate:up
 
 CREATE TABLE reservations (
-  reservation_number INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
+  reservation_number BIGINT UNSIGNED NOT NULL PRIMARY KEY UNIQUE,
   date DATE NOT NULL,
   patient VARCHAR(30) NOT NULL,
   hospital_id INT NOT NULL,

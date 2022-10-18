@@ -17,20 +17,14 @@ const getReservationByUserId = async (patient) => {
   return result;
 };
 
-const createReservation = async (
-  reservation_number,
-  date,
-  patient,
-  hospitalId,
-  timeId,
-  typeId
-) => {
+const createReservation = async (date, patient, hospitalId, timeId, typeId) => {
   try {
     await myDataSource.query(
-      `INSERT INTO reservations (reservation_number,date,patient,hospital_id,time_id,type_id) VALUES (?,?,?,?,?,?)`,
-      [reservation_number, date, patient, hospitalId, timeId, typeId]
+      `INSERT INTO reservations (reservation_number,date,patient,hospital_id,time_id,type_id) VALUES (uuid_short(),?,?,?,?,?)`,
+      [date, patient, hospitalId, timeId, typeId]
     );
-  } catch {
+  } catch (err) {
+    console.log(err);
     throw new BaseError("DUPLICATED_RESERVATION", 400);
   }
   return;

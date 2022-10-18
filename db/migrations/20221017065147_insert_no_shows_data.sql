@@ -1,7 +1,7 @@
 -- migrate:up
 
 INSERT INTO no_shows (reservation_number, patient, hospital_id)
-VALUES (1, 1, 1)
+VALUES (100006536511750145, "이코더", 1)
 
 -- migrate:down
 

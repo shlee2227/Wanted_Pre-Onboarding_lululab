@@ -9,8 +9,8 @@ h.name AS hospital,
 h.contact hospital_contact,
 time.time AS time, 
 type.name AS type,
-updated_at AS updated_at, 
-created_at AS created_at
+date_format(updated_at,'%Y-%m-%d %H:%i:%s') AS updated_at, 
+date_format(created_at,'%Y-%m-%d %H:%i:%s') AS created_at
 FROM reservations AS r
 LEFT JOIN hospitals AS h ON r.hospital_id = h.id
 LEFT JOIN times AS time ON r.time_id = time.id 

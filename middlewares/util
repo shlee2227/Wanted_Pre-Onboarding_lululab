@@ -67,6 +67,18 @@ const isReservationExist = async (reservationNumber) => {
   }
 };
 
+const hasNoShow = async (patient, hospital_id) => {
+  const isExist = (
+    await myDataSource.query(
+      `SELECT EXISTS (SELECT id FROM no_shows WHERE (patient = ? AND hospital_id = ?)) AS isExist`,
+      [patient, hospital_id]
+    )
+  )[0].isExist;
+  if (isExist == 1) {
+    throw new BaseError("INVAILD_ACCESS_NO_SHOW", 400);
+  }
+};
+
 module.exports = {
   dateFormatCheck,
   isNotPast,
@@ -74,4 +86,5 @@ module.exports = {
   isTimeExist,
   isTypeExist,
   isReservationExist,
+  hasNoShow,
 };

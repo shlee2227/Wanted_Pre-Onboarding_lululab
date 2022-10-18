@@ -17,16 +17,8 @@ const getReservation = async (data) => {
   return result;
 };
 
-const createReservation = async (
-  reservation_number,
-  date,
-  patient,
-  hospitalId,
-  timeId,
-  typeId
-) => {
+const createReservation = async (date, patient, hospitalId, timeId, typeId) => {
   await reservationDao.createReservation(
-    reservation_number,
     date,
     patient,
     hospitalId,

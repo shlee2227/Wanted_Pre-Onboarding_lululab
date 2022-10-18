@@ -2,7 +2,7 @@
 
 CREATE TABLE no_shows (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  reservation_number INT NOT NULL UNIQUE,
+  reservation_number BIGINT UNSIGNED NOT NULL UNIQUE,
   patient VARCHAR(30) NOT NULL,
   hospital_id INT NOT NULL,
   created_at DATETIME NOT NULL DEFAULT NOW(),
