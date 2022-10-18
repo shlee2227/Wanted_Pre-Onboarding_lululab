@@ -104,7 +104,6 @@ describe("RESERVATION TEST", () => {
 
     test("SUCCESS: reservation", async () => {
       const obj = {
-        reservation_number: 6,
         date: "2022-10-19",
         patient: "김코드",
         hospital_id: 1,
@@ -118,7 +117,6 @@ describe("RESERVATION TEST", () => {
 
     test("FAIL: duplicated 1", async () => {
       const obj = {
-        reservation_number: 7,
         date: "2022-10-17",
         patient: "김코드",
         hospital_id: 5,
@@ -134,7 +132,6 @@ describe("RESERVATION TEST", () => {
 
     test("FAIL: duplicated 2", async () => {
       const obj = {
-        reservation_number: 7,
         date: "2022-10-17",
         patient: "박버그",
         hospital_id: 1,
@@ -148,25 +145,8 @@ describe("RESERVATION TEST", () => {
       });
     });
 
-    test("FAIL: duplicated 3", async () => {
-      const obj = {
-        reservation_number: 6,
-        date: "2022-10-21",
-        patient: "김코드",
-        hospital_id: 5,
-        time_id: 4,
-        type_id: 2,
-      };
-      const res = await createReservation(obj);
-      expect(res.status).toBe(400);
-      expect(JSON.parse(res.text)).toEqual({
-        message: "DUPLICATED_RESERVATION",
-      });
-    });
-
     test("FAIL: invalid value", async () => {
       const obj = {
-        reservation_number: 8,
         date: "2022-10-20",
         patient: "박버그",
         hospital_id: 5,
@@ -182,7 +162,6 @@ describe("RESERVATION TEST", () => {
 
     test("FAIL: missing value 1", async () => {
       const obj = {
-        reservation_number: 8,
         date: "2022-10-20",
         hospital_id: "박버그",
         time_id: 2,
@@ -197,7 +176,6 @@ describe("RESERVATION TEST", () => {
 
     test("FAIL: missing value 2", async () => {
       const obj = {
-        reservation_number: 8,
         patient: "박버그",
         hospital_id: 5,
         time_id: 2,
@@ -220,7 +198,6 @@ describe("RESERVATION TEST", () => {
 
     test("FAIL: invalid date 1", async () => {
       const obj = {
-        reservation_number: 6,
         date: "1700-10-17",
         patient: "김코드",
         hospital_id: 1,
@@ -236,7 +213,6 @@ describe("RESERVATION TEST", () => {
 
     test("FAIL: invalid date 2", async () => {
       const obj = {
-        reservation_number: 6,
         date: "2022-10-51",
         patient: "김코드",
         hospital_id: 1,
@@ -247,6 +223,21 @@ describe("RESERVATION TEST", () => {
       expect(res.status).toBe(400);
       expect(JSON.parse(res.text)).toEqual({
         message: "INVALID_DATE",
+      });
+    });
+
+    test("FAIL: no show", async () => {
+      const obj = {
+        date: "2022-10-22",
+        patient: "이코더",
+        hospital_id: 1,
+        time_id: 4,
+        type_id: 1,
+      };
+      const res = await createReservation(obj);
+      expect(res.status).toBe(400);
+      expect(JSON.parse(res.text)).toEqual({
+        message: "INVAILD_ACCESS_NO_SHOW",
       });
     });
   });

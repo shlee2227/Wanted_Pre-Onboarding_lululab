@@ -13,7 +13,6 @@ const getReservation = async (req, res) => {
 
 const createReservation = async (req, res) => {
   const hasKey = {
-    reservation_number: false,
     date: false,
     patient: false,
     hospital_id: false,
@@ -36,16 +35,15 @@ const createReservation = async (req, res) => {
     }
   }
 
-  const { reservation_number, date, patient, hospital_id, time_id, type_id } =
-    req.body;
-
-  //body 값 중 reference 없는거 있는지 확인/날짜 유효성 확인
+  const { date, patient, hospital_id, time_id, type_id } = req.body;
+  // 노쇼 기록 확인
+  await util.hasNoShow(patient, hospital_id);
+  // body 값 중 reference 없는거 있는지 확인/날짜 유효성 확인
   await util.dateFormatCheck(date);
   await util.isHospitalExist(hospital_id);
   await util.isTimeExist(time_id);
   await util.isTypeExist(type_id);
   await reservationService.createReservation(
-    reservation_number,
     date,
     patient,
     hospital_id,
