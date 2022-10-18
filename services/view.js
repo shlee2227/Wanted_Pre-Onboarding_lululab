@@ -1,7 +1,10 @@
 const viewDao = require("../models/view");
 
-const func = async () => {};
+const getAvailableReservations = async (hospitalId, date) => {
+  const result = await viewDao.getAvailableReservations(hospitalId, date);
+  return result;
+};
 
 module.exports = {
-  func,
+  getAvailableReservations,
 };

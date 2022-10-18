@@ -6,7 +6,7 @@
   "scripts": {
     "test": "DOTENV_CONFIG_PATH=.env.test jest --setupFiles=dotenv/config --forceExit",
     "format": "prettier --config ./.prettierrc.json --write '**/*.{js,jsx,ts,tsx}'",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
