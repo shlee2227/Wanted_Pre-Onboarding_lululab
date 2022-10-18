@@ -6,7 +6,10 @@ const router = express.Router();
 
 router.get("/", errorHandler(reservationController.getReservation));
 router.post("/create", errorHandler(reservationController.createReservation));
-router.post("/noshow/:id", errorHandler(reservationController.createNoShow));
-router.patch("/update", errorHandler(reservationController.updateReservation));
+router.post("/noshow/:No", errorHandler(reservationController.createNoShow));
+router.patch(
+  "/update/:No",
+  errorHandler(reservationController.updateReservation)
+);
 
 module.exports = router;

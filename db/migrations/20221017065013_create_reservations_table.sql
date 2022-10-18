@@ -1,8 +1,7 @@
 -- migrate:up
 
 CREATE TABLE reservations (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  reservation_number VARCHAR(255) UNIQUE,
+  reservation_number INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
   date DATE NOT NULL,
   patient VARCHAR(30) NOT NULL,
   hospital_id INT NOT NULL,
@@ -14,7 +13,7 @@ CREATE TABLE reservations (
   FOREIGN KEY (time_id) REFERENCES times (id),
   FOREIGN KEY (hospital_id) REFERENCES hospitals (id),
   CONSTRAINT hospital_time UNIQUE (date, hospital_id, time_id),
-  CONSTRAINT user_time UNIQUE (date,patient, time_id)
+  CONSTRAINT user_time UNIQUE (date, patient, time_id)
 );
 
 -- migrate:down

@@ -3,7 +3,7 @@ const { myDataSource } = require("../models/typeorm-client");
 const { createApp } = require("../app");
 
 //TEST
-describe("USER TEST", () => {
+describe("RESERVATION TEST", () => {
   let app;
 
   beforeAll(async () => {
@@ -29,7 +29,7 @@ describe("USER TEST", () => {
     (3,"2022-10-18","김코드",3,4,1),
     (4,"2022-10-24","이코더",1,3,1),
     (5,"2022-10-26","김코드",2,4,2)`);
-    await myDataSource.query(`INSERT INTO no_show (reservation_id, patient, hospital_id)
+    await myDataSource.query(`INSERT INTO no_shows (reservation_number, patient, hospital_id)
     VALUES (1, "이코더", 1)`);
   });
 
@@ -40,7 +40,7 @@ describe("USER TEST", () => {
     await myDataSource.query(`TRUNCATE types;`);
     await myDataSource.query(`TRUNCATE times;`);
     await myDataSource.query(`TRUNCATE reservations;`);
-    await myDataSource.query(`TRUNCATE no_show;`);
+    await myDataSource.query(`TRUNCATE no_shows;`);
     await myDataSource.query(`SET FOREIGN_KEY_CHECKS = 1;`);
   };
 
@@ -58,34 +58,37 @@ describe("USER TEST", () => {
 
   // RESERVATION
   // GET RESERVATION BY RESERVATION ID/USER ID
-
   describe("GET RESERVATION TEST", () => {
     beforeAll(async () => {});
     afterAll(async () => {});
 
-    const getResevation = async (param) => {
-      return await request(app).get(`/book?${param}`);
+    const getReservationByReservationNumber = async (query) => {
+      return await request(app).get(`/book?bookNo=${query}`);
     };
 
-    test("SUCCESS: get reservation (reservation id)", async () => {
-      const res = await getResevation("bookNo=1");
+    const getResevationByPatient = async (patient) => {
+      const endPoint = `/book?patient=${patient}`;
+      const query = encodeURI(endPoint);
+      return await request(app).get(query);
+    };
+
+    test("SUCCESS: get reservation (reservation number)", async () => {
+      const res = await getReservationByReservationNumber(1);
       expect(res.status).toBe(200);
-      //expect(JSON.parse(res.text)).toEqual({});
     });
 
-    test("SUCCESS: get reservation (user id)", async () => {
-      const res = await getResevation("userId=1");
+    test("SUCCESS: get reservation (patient)", async () => {
+      const res = await getResevationByPatient("김코드");
       expect(res.status).toBe(200);
-      //expect(JSON.parse(res.text)).toEqual({});
     });
 
-    test("SUCCESS: no reservation (reservation id)", async () => {
-      const res = await getResevation("bookNo=99");
+    test("SUCCESS: no reservation (reservation number)", async () => {
+      const res = await getReservationByReservationNumber(99);
       expect(res.status).toBe(204);
     });
 
-    test("SUCCESS: no reservation (user id)", async () => {
-      const res = await getResevation("userId=99");
+    test("SUCCESS: no reservation (patient)", async () => {
+      const res = await getResevationByPatient("김코코");
       expect(res.status).toBe(204);
     });
   });
@@ -109,7 +112,7 @@ describe("USER TEST", () => {
         type_id: 1,
       };
       const res = await createReservation(obj);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(201);
       expect(JSON.parse(res.text)).toEqual({ message: "SUCCESS" });
     });
 
@@ -158,6 +161,22 @@ describe("USER TEST", () => {
       expect(res.status).toBe(400);
       expect(JSON.parse(res.text)).toEqual({
         message: "DUPLICATED_RESERVATION",
+      });
+    });
+
+    test("FAIL: invalid value", async () => {
+      const obj = {
+        reservation_number: 8,
+        date: "2022-10-20",
+        patient: "박버그",
+        hospital_id: 5,
+        time_id: 2,
+        type_id: 99,
+      };
+      const res = await createReservation(obj);
+      expect(res.status).toBe(400);
+      expect(JSON.parse(res.text)).toEqual({
+        message: "INVALID_DATA",
       });
     });
 
@@ -233,17 +252,17 @@ describe("USER TEST", () => {
   });
 
   // CREATE NOSHOW
-  describe("CREATE RESERVATION TEST", () => {
+  describe("CREATE NOSHOW TEST", () => {
     beforeAll(async () => {});
     afterAll(async () => {});
 
-    const createNoShow = async (reservation_id) => {
-      return await request(app).post(`/book/create/${reservation_id}`);
+    const createNoShow = async (reservation_number) => {
+      return await request(app).post(`/book/noshow/${reservation_number}`);
     };
 
-    test("SUCCESS: create no_show data", async () => {
+    test("SUCCESS: create no_shows data", async () => {
       const res = await createNoShow(2);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(201);
       expect(JSON.parse(res.text)).toEqual({ message: "SUCCESS" });
     });
 
@@ -259,7 +278,7 @@ describe("USER TEST", () => {
       const res = await createNoShow(99);
       expect(res.status).toBe(400);
       expect(JSON.parse(res.text)).toEqual({
-        message: "NO_RESERVATION_DATA",
+        message: "INVALID_DATA",
       });
     });
   });
@@ -291,38 +310,28 @@ describe("USER TEST", () => {
       (5,"2022-10-26","김코드",2,4,2)`);
     });
 
-    const updateReservation = async (id, obj) => {
-      return await request(app).post(`/book/update/:${id}`).send(obj);
+    const updateReservation = async (No, obj) => {
+      return await request(app).patch(`/book/update/${No}`).send(obj);
     };
 
-    test("SUCCESS: reservation", async () => {
+    test("SUCCESS: update 1", async () => {
       const obj = {
         patient: "김변경",
       };
       const res = await updateReservation(1, obj);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(201);
       expect(JSON.parse(res.text)).toEqual({ message: "SUCCESS" });
     });
 
-    test("SUCCESS: reservation", async () => {
-      const obj = {
-        patient: "김변경",
-      };
-      const res = await updateReservation(1, obj);
-      expect(res.status).toBe(200);
-      expect(JSON.parse(res.text)).toEqual({ message: "SUCCESS" });
-    });
-
-    test("SUCCESS: reservation", async () => {
+    test("SUCCESS: update 2", async () => {
       const obj = {
         date: "2022-10-26",
         patient: "이코더",
-        hospital_id: 3,
         time_id: 5,
         type_id: 1,
       };
       const res = await updateReservation(4, obj);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(201);
       expect(JSON.parse(res.text)).toEqual({ message: "SUCCESS" });
     });
 
@@ -330,7 +339,6 @@ describe("USER TEST", () => {
       const obj = {
         date: "2022-10-18",
         patient: "김코드",
-        hospital_id: 3,
         time_id: 4,
         type_id: 2,
       };
@@ -343,7 +351,7 @@ describe("USER TEST", () => {
 
     test("FAIL: invalid date", async () => {
       const obj = {
-        date: "2020-10-18",
+        date: "1235-10-18",
       };
       const res = await updateReservation(2, obj);
       expect(res.status).toBe(400);
@@ -355,7 +363,7 @@ describe("USER TEST", () => {
 
   // VIEW
   // GET ALL AVALIABLE RESERVATIONS BY DATE
-  describe("GET RESERVATION TEST", () => {
+  describe("GET AVAILABLE RESERVATION TEST", () => {
     beforeAll(async () => {
       await truncateAll();
       await myDataSource.query(`
@@ -394,30 +402,37 @@ describe("USER TEST", () => {
       (3,"2022-10-18","김코드",3,4,1),
       (4,"2022-10-24","이코더",1,3,1),
       (5,"2022-10-26","김코드",2,4,2)`);
-      await myDataSource.query(`INSERT INTO no_show (reservation_id, patient, hospital_id)
+      await myDataSource.query(`INSERT INTO no_shows (reservation_number, patient, hospital_id)
       VALUES (1, "이코더", 1)`);
     });
 
-    const getAvailableResevationByDate = async (date) => {
-      return await request(app).get(`/view?date=${date}`);
+    const getAvailableResevationByDate = async (hospital_id, date) => {
+      return await request(app).get(`/view/${hospital_id}?date=${date}`);
     };
 
     test("SUCCESS: get available reservation ", async () => {
-      const res = await getAvailableResevationByDate("2022-10-18");
+      const res = await getAvailableResevationByDate(1, "2022-10-18");
       expect(res.status).toBe(200);
-      //expect(JSON.parse(res.text)).toEqual({});
     });
 
     test("SUCCESS: no available reservation", async () => {
-      const res = await getAvailableResevationByDate("2022-10-17");
-      expect(res.status).toBe(204);
+      const res = await getAvailableResevationByDate(1, "2022-10-17");
+      expect(res.status).toBe(200);
     });
 
     test("FAIL: invalid date", async () => {
-      const res = await getAvailableResevationByDate("1700-10-17");
+      const res = await getAvailableResevationByDate(1, "1700-10-17");
       expect(res.status).toBe(400);
       expect(JSON.parse(res.text)).toEqual({
         message: "INVALID_DATE",
+      });
+    });
+
+    test("FAIL: invalid hospital", async () => {
+      const res = await getAvailableResevationByDate(99, "2022-10-17");
+      expect(res.status).toBe(400);
+      expect(JSON.parse(res.text)).toEqual({
+        message: "INVALID_DATA",
       });
     });
   });

@@ -4,6 +4,6 @@ const errorHandler = require("../middlewares/error-handler");
 
 const router = express.Router();
 
-router.get("/", errorHandler(viewController.getAvailableReservations));
+router.get("/:hos_id", errorHandler(viewController.getAvailableReservations));
 
 module.exports = router;
